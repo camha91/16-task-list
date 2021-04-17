@@ -1,5 +1,6 @@
 import { TaskListDarkTheme } from "../../Themes/TaskListDarkTheme";
-import { add_task } from "../types/TaskListTypes";
+import { add_task, change_theme } from "../types/TaskListTypes";
+import { arrTheme } from "../../Themes/ThemeManager";
 
 const initialState = {
   themeTaskList: TaskListDarkTheme,
@@ -30,6 +31,15 @@ const TaskListReducer = (state = initialState, action) => {
       }
 
       state.taskList = [...taskListUpdate, action.newTask];
+
+      return { ...state };
+    }
+    case change_theme: {
+      const theme = arrTheme.find((theme) => theme.id == action.themeId);
+
+      if (theme) {
+        state.themeTaskList = { ...theme.theme };
+      }
 
       return { ...state };
     }

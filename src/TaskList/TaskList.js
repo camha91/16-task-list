@@ -17,7 +17,11 @@ import { Button } from "./Components/Button.js";
 import { Table, Thead, Tbody, Tr, Td, Th } from "./Components/Table.js";
 
 import { connect } from "react-redux";
-import { addTaskAction } from "../redux/actions/TaskListActions.js";
+import {
+  addTaskAction,
+  changeThemeAction,
+} from "../redux/actions/TaskListActions.js";
+import { arrTheme } from "../Themes/ThemeManager";
 
 class TaskList extends Component {
   state = { taskName: "" };
@@ -62,14 +66,25 @@ class TaskList extends Component {
       });
   };
 
+  renderTheme = () => {
+    return arrTheme.map((theme, index) => {
+      return <option value={theme.id}>{theme.name}</option>;
+    });
+  };
+
   render() {
     return (
-      <ThemeProvider onChange={() => {}} theme={this.props.themeTaskList}>
+      <ThemeProvider theme={this.props.themeTaskList}>
         <Container className="w-50 mt-5">
-          <Dropdown>
-            <option>Dark Theme</option>
-            <option>Light Theme</option>
-            <option>Default Theme</option>
+          <Dropdown
+            onChange={(e) => {
+              const { value } = e.target;
+
+              // Dispatch value to reducer
+              this.props.dispatch(changeThemeAction(value));
+            }}
+          >
+            {this.renderTheme()}
           </Dropdown>
           <Heading3>Task To Do</Heading3>
           <TextField
