@@ -3,6 +3,7 @@ import {
   change_theme,
   complete_task,
   delete_task,
+  edit_task,
   update_task,
 } from "../types/TaskListTypes";
 
@@ -21,12 +22,17 @@ export const completeTaskAction = (taskId) => ({
   taskId,
 });
 
-export const updateTaskAction = (taskId) => ({
-  type: update_task,
-  taskId,
-});
-
 export const deleteTaskAction = (taskId) => ({
   type: delete_task,
   taskId,
+});
+
+export const editTaskAction = (task) => ({
+  type: edit_task,
+  task,
+});
+
+export const updateTaskAction = (taskName) => ({
+  type: update_task,
+  taskName,
 });

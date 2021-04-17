@@ -1,9 +1,6 @@
 import React, { Component } from "react";
 import { Container } from "./Components/Container.js";
 import { ThemeProvider } from "styled-components";
-import { TaskListDarkTheme } from "../Themes/TaskListDarkTheme";
-import { TaskListLightTheme } from "../Themes/TaskListLightTheme";
-import { TaskListDefaultTheme } from "../Themes/TaskListDefaultTheme";
 import { Dropdown } from "./Components/Dropdown.js";
 import {
   Heading1,
@@ -22,12 +19,13 @@ import {
   changeThemeAction,
   completeTaskAction,
   deleteTaskAction,
+  editTaskAction,
+  updateTaskAction,
 } from "../redux/actions/TaskListActions.js";
 import { arrTheme } from "../Themes/ThemeManager";
-import { bindActionCreators } from "redux";
 
 class TaskList extends Component {
-  state = { taskName: "" };
+  state = { taskName: "", disabled: true };
 
   renderTaskToDo = () => {
     return this.props.taskList
@@ -37,9 +35,22 @@ class TaskList extends Component {
           <Tr key={index}>
             <Th style={{ verticalAlign: "middle" }}>{task.taskName}</Th>
             <Th className="text-right">
-              <Button onClick={() => {}} className="ml-2">
+              <Button
+                onClick={() => {
+                  this.setState(
+                    {
+                      disabled: false,
+                    },
+                    () => {
+                      this.props.dispatch(editTaskAction(task));
+                    }
+                  );
+                }}
+                className="ml-2"
+              >
                 <i className="fa fa-edit"></i>
               </Button>
+
               <Button
                 onClick={() => {
                   this.props.dispatch(completeTaskAction(task.id));
@@ -48,6 +59,7 @@ class TaskList extends Component {
               >
                 <i className="fa fa-check"></i>
               </Button>
+
               <Button
                 onClick={() => {
                   this.props.dispatch(deleteTaskAction(task.id));
@@ -70,7 +82,12 @@ class TaskList extends Component {
           <Tr key={index}>
             <Th style={{ verticalAlign: "middle" }}>{task.taskName}</Th>
             <Th className="text-right">
-              <Button onClick={() => {}} className="ml-2">
+              <Button
+                onClick={() => {
+                  this.props.dispatch(deleteTaskAction(task.id));
+                }}
+                className="ml-2"
+              >
                 <i className="fa fa-trash"></i>
               </Button>
             </Th>
@@ -105,6 +122,7 @@ class TaskList extends Component {
           </Dropdown>
           <Heading3>Task To Do</Heading3>
           <TextField
+            value={this.state.taskName}
             onChange={(e) => {
               this.setState({
                 taskName: e.target.value,
@@ -132,9 +150,36 @@ class TaskList extends Component {
           >
             <i className="fa fa-plus">Add Task</i>
           </Button>
-          <Button className="ml-2">
-            <i className="fa fa-upload">Update Task</i>
-          </Button>
+          {this.state.disabled ? (
+            <Button
+              disabled
+              onClick={() => {
+                this.props.dispatch(updateTaskAction(this.state.taskName));
+              }}
+              className="ml-2"
+            >
+              <i className="fa fa-upload">Update Task</i>
+            </Button>
+          ) : (
+            <Button
+              onClick={() => {
+                const { taskName } = this.state;
+                this.setState(
+                  {
+                    disabled: true,
+                    taskName: "",
+                  },
+                  () => {
+                    this.props.dispatch(updateTaskAction(taskName));
+                  }
+                );
+              }}
+              className="ml-2"
+            >
+              <i className="fa fa-upload">Update Task</i>
+            </Button>
+          )}
+
           <br />
           <Table>
             <Thead>{this.renderTaskToDo()}</Thead>
@@ -148,12 +193,22 @@ class TaskList extends Component {
       </ThemeProvider>
     );
   }
+
+  componentDidUpdate(prevProps, prevState) {
+    // Compore if prevProps (prev taskEdit differ from current taskEdit then setState will be used)
+    if (prevProps.taskEdit.id !== this.props.taskEdit.id) {
+      this.setState({
+        taskName: this.props.taskEdit.taskName,
+      });
+    }
+  }
 }
 
 const mapStateToProps = (state) => {
   return {
     themeTaskList: state.TaskListReducer.themeTaskList,
     taskList: state.TaskListReducer.taskList,
+    taskEdit: state.TaskListReducer.taskEdit,
   };
 };
 

@@ -4,6 +4,8 @@ import {
   change_theme,
   complete_task,
   delete_task,
+  edit_task,
+  update_task,
 } from "../types/TaskListTypes";
 import { arrTheme } from "../../Themes/ThemeManager";
 
@@ -15,6 +17,7 @@ const initialState = {
     { id: "task-3", taskName: "task 3", done: true },
     { id: "task-4", taskName: "task 4", done: false },
   ],
+  taskEdit: { id: "-1", taskName: "", done: false },
 };
 
 const TaskListReducer = (state = initialState, action) => {
@@ -80,6 +83,29 @@ const TaskListReducer = (state = initialState, action) => {
         ...state,
         taskList: state.taskList.filter((task) => task.id !== action.taskId),
       };
+    }
+    case edit_task: {
+      return { ...state, taskEdit: action.task };
+    }
+    case update_task: {
+      // Edit taskName of taskEdit
+      state.taskEdit = { ...state.taskEdit, taskName: action.taskName };
+
+      // Find the id in taskList that match with the id from user to edit
+
+      const taskListUpdate = [...state.taskList];
+      const index = taskListUpdate.findIndex(
+        (task) => task.id === state.taskEdit.id
+      );
+
+      if (index !== -1) {
+        taskListUpdate[index] = state.taskEdit;
+      }
+
+      state.taskList = taskListUpdate;
+      state.taskEdit = { id: "-1", taskName: "", done: false };
+
+      return { ...state };
     }
     default:
       return { ...state };
