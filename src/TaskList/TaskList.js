@@ -20,8 +20,11 @@ import { connect } from "react-redux";
 import {
   addTaskAction,
   changeThemeAction,
+  completeTaskAction,
+  deleteTaskAction,
 } from "../redux/actions/TaskListActions.js";
 import { arrTheme } from "../Themes/ThemeManager";
+import { bindActionCreators } from "redux";
 
 class TaskList extends Component {
   state = { taskName: "" };
@@ -34,13 +37,23 @@ class TaskList extends Component {
           <Tr key={index}>
             <Th style={{ verticalAlign: "middle" }}>{task.taskName}</Th>
             <Th className="text-right">
-              <Button className="ml-2">
+              <Button onClick={() => {}} className="ml-2">
                 <i className="fa fa-edit"></i>
               </Button>
-              <Button className="ml-2">
+              <Button
+                onClick={() => {
+                  this.props.dispatch(completeTaskAction(task.id));
+                }}
+                className="ml-2"
+              >
                 <i className="fa fa-check"></i>
               </Button>
-              <Button className="ml-2">
+              <Button
+                onClick={() => {
+                  this.props.dispatch(deleteTaskAction(task.id));
+                }}
+                className="ml-2"
+              >
                 <i className="fa fa-trash"></i>
               </Button>
             </Th>
@@ -57,7 +70,7 @@ class TaskList extends Component {
           <Tr key={index}>
             <Th style={{ verticalAlign: "middle" }}>{task.taskName}</Th>
             <Th className="text-right">
-              <Button className="ml-2">
+              <Button onClick={() => {}} className="ml-2">
                 <i className="fa fa-trash"></i>
               </Button>
             </Th>
@@ -68,7 +81,11 @@ class TaskList extends Component {
 
   renderTheme = () => {
     return arrTheme.map((theme, index) => {
-      return <option value={theme.id}>{theme.name}</option>;
+      return (
+        <option key={index} value={theme.id}>
+          {theme.name}
+        </option>
+      );
     });
   };
 

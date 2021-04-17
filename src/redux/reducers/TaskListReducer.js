@@ -1,5 +1,10 @@
 import { TaskListDarkTheme } from "../../Themes/TaskListDarkTheme";
-import { add_task, change_theme } from "../types/TaskListTypes";
+import {
+  add_task,
+  change_theme,
+  complete_task,
+  delete_task,
+} from "../types/TaskListTypes";
 import { arrTheme } from "../../Themes/ThemeManager";
 
 const initialState = {
@@ -42,6 +47,39 @@ const TaskListReducer = (state = initialState, action) => {
       }
 
       return { ...state };
+    }
+    case complete_task: {
+      const taskListUpdate = [...state.taskList];
+      const index = taskListUpdate.findIndex(
+        (task) => task.id === action.taskId
+      );
+
+      if (index !== -1) {
+        taskListUpdate[index].done = true;
+      }
+
+      return { ...state, taskList: taskListUpdate };
+    }
+    case delete_task: {
+      // let taskListUpdate = [...state.taskList];
+      // Method 1: Delete using splice function
+      // const index = taskListUpdate.findIndex(
+      //   (task) => task.id === action.taskId
+      // );
+      // if (index !== -1) {
+      //   taskListUpdate.splice(index, 1);
+      // }
+
+      // Method 2: Delete using filter function
+      // Get the new list without the task that match the action.taskId
+      // taskListUpdate = taskListUpdate.filter(
+      //   (task) => task.id !== action.taskId
+      // );
+
+      return {
+        ...state,
+        taskList: state.taskList.filter((task) => task.id !== action.taskId),
+      };
     }
     default:
       return { ...state };
