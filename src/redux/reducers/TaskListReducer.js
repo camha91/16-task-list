@@ -1,4 +1,5 @@
 import { TaskListDarkTheme } from "../../Themes/TaskListDarkTheme";
+import { add_task } from "../types/TaskListTypes";
 
 const initialState = {
   themeTaskList: TaskListDarkTheme,
@@ -12,6 +13,26 @@ const initialState = {
 
 const TaskListReducer = (state = initialState, action) => {
   switch (action.type) {
+    case add_task: {
+      if (action.newTask.taskName.trim === "") {
+        alert("Task name is required!");
+        return { ...state };
+      }
+
+      const taskListUpdate = [...state.taskList];
+      const index = taskListUpdate.findIndex(
+        (task) => task.taskName === action.newTask.taskName
+      );
+
+      if (index !== -1) {
+        alert("Task name is already exist!");
+        return { ...state };
+      }
+
+      state.taskList = [...taskListUpdate, action.newTask];
+
+      return { ...state };
+    }
     default:
       return { ...state };
   }

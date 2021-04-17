@@ -1,4 +1,4 @@
-import TaskList from "./Components/TaskList";
+import TaskList from "./TaskList/TaskList";
 
 function App() {
   return (
